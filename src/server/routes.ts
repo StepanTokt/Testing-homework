@@ -3,8 +3,11 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { CheckoutResponse } from '../common/types';
 import { ExampleStore } from './data';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function getBugId(req: express.Request) {
+    console.log( Number(req.query.bug_id) || Number(process.env.BUG_ID) || 0)
     return Number(req.query.bug_id) || Number(process.env.BUG_ID) || 0;
 }
 
