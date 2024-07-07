@@ -8,8 +8,67 @@ describe("Тесты только багов", async function () {
         expect(await productName.getText()).not.toBe("")
     });
 
-    //bug_id = 2,5,6,7,8,10
-    it("Проверка формы для заполения", async function ({browser}) {
+   
+
+    //bug_id = 4
+    it("Закрытие гамбургер-меню", async function ({browser}) {
+      await browser.setWindowSize(500, 1080);
+      await browser.url("http://localhost:3000/hw/store/");
+
+      const appToggler = await browser.$(".Application-Toggler");
+      await appToggler.waitForExist();
+      await appToggler.click();
+
+      const link = await browser.$$(".navbar-nav > .nav-link")[0];
+      await link.waitForExist();
+      await link.click();
+
+      const appMenu3= await browser.$(".Application-Menu");
+      await appMenu3.waitForExist();
+      const appMenuClasses3 = await appMenu3.getAttribute("class");
+      
+      const appMenuCollapse = appMenuClasses3.split(" ").includes("collapse");
+      expect(appMenuCollapse).toBe(true);
+      
+    })
+
+    //bug_id = 9
+    it("Размер кнопки на странице товара не изменился", async function ({ browser }) {
+        const mockProduct ='{"id":0,"name":"kogt1","description":"kogt1Desctiption","price":10,"color":"kogt1Color","material":"kogt1Material"}'
+        const productMock = await browser.mock("http://localhost:3000/hw/store/api/products/0");
+        await productMock.respond(mockProduct);
+    
+        await browser.url("http://localhost:3000/hw/store/catalog/0");
+        
+        const applicationElement = await browser.$(".Application");
+        
+        await applicationElement.assertView("plain", {
+            ignoreElements: [
+                ".ProductDetails-Name",
+                ".ProductDetails-Description",
+                ".ProductDetails-Color",
+                ".ProductDetails-Price",
+                ".ProductDetails-Material",
+                ".navbar",
+                ".CartBadge",
+            ],
+            compositeImage: true,
+        });
+    });
+
+     //bug_id = 3
+     it("Проверка на отображение товара", async function ({ browser }) {
+        await browser.url("http://localhost:3000/hw/store/catalog/1");
+    
+        const product = await browser.$(".Product");
+        await product.waitForExist();
+    
+        expect(await product.getText()).not.toEqual("LOADING");
+    });
+
+
+     //bug_id = 2,5,6,7,8,10
+     it("Проверка формы для заполения", async function ({browser}) {
         await browser.setWindowSize(1366, 768);
     
         await browser.url("http://localhost:3000/hw/store/cart");
@@ -67,61 +126,7 @@ describe("Тесты только багов", async function () {
         expect(await cartNumber.getText()).toEqual("1");
     });
 
-    //bug_id = 3
-    it("Проверка на отображение товара", async function ({ browser }) {
-        await browser.url("http://localhost:3000/hw/store/catalog/1");
-    
-        const product = await browser.$(".Product");
-        await product.waitForExist();
-    
-        expect(await product.getText()).not.toEqual("LOADING");
-    });
-
-    //bug_id = 4
-    it("Закрытие гамбургер-меню", async function ({browser}) {
-      await browser.setWindowSize(500, 1080);
-      await browser.url("http://localhost:3000/hw/store/");
-
-      const appToggler = await browser.$(".Application-Toggler");
-      await appToggler.waitForExist();
-      await appToggler.click();
-
-      const link = await browser.$$(".navbar-nav > .nav-link")[0];
-      await link.waitForExist();
-      await link.click();
-
-      const appMenu3= await browser.$(".Application-Menu");
-      await appMenu3.waitForExist();
-      const appMenuClasses3 = await appMenu3.getAttribute("class");
-      
-      const appMenuCollapse = appMenuClasses3.split(" ").includes("collapse");
-      expect(appMenuCollapse).toBe(true);
-      
-    })
-
-    //bug_id = 9
-    it("Размер кнопки на странице товара не изменился", async function ({ browser }) {
-        const mockProduct ='{"id":0,"name":"kogt1","description":"kogt1Desctiption","price":10,"color":"kogt1Color","material":"kogt1Material"}'
-        const productMock = await browser.mock("http://localhost:3000/hw/store/api/products/0");
-        await productMock.respond(mockProduct);
-    
-        await browser.url("http://localhost:3000/hw/store/catalog/0");
-        
-        const applicationElement = await browser.$(".Application");
-        
-        await applicationElement.assertView("plain", {
-            ignoreElements: [
-                ".ProductDetails-Name",
-                ".ProductDetails-Description",
-                ".ProductDetails-Color",
-                ".ProductDetails-Price",
-                ".ProductDetails-Material",
-                ".navbar",
-                ".CartBadge",
-            ],
-            compositeImage: true,
-        });
-    });
+   
     
     
 })
